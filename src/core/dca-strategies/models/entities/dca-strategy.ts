@@ -1,4 +1,11 @@
 export interface DcaStrategy {
-    id: string;
-    name: string
+    uuid: string;
+    name: string;
+    type: "Buy"
+    asset: string;
+    exchange: string;
+    currencyAmount: number;
+    currency: "USD";
+    frequency: { type: "Once" };
+    active: boolean;
 }

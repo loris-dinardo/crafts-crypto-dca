@@ -4,7 +4,7 @@ import {createInMemoryRetrieveDcaStrategyListQuery} from "../../infra/adapters";
 
 interface SUTProps {
     dcaStrategies?: Array<{
-        id: string;
+        uuid: string;
         name: string;
     }>
 }
@@ -25,7 +25,7 @@ export const retrieveStrategyListSUT = (props: SUTProps = {}) => {
         build() {
             const retrieveDcaStrategyListQuery =
                 createInMemoryRetrieveDcaStrategyListQuery({
-                    existingDcaStrategies: props.dcaStrategies
+                    //existingDcaStrategies: props.dcaStrategies
                 });
             const store = createTestStore({
                 retrieveDcaStrategyListQuery

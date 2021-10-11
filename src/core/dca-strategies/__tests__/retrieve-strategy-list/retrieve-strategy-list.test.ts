@@ -16,8 +16,8 @@ describe("Retrieve DCA strategy list", () => {
         // arrange
         const {selectAllStrategies, retrieveDcaStrategyList} = retrieveStrategyListSUT()
             .withExistingStrategies([
-                {id: "strategy_1", name: "My first dca strategy"},
-                {id: "strategy_2", name: "It's a long term investment"}
+                {uuid: "strategy_1", name: "My first dca strategy"},
+                {uuid: "strategy_2", name: "It's a long term investment"}
             ])
             .build();
 
@@ -27,8 +27,8 @@ describe("Retrieve DCA strategy list", () => {
         // assert
         expect(selectAllStrategies()).toEqual({
             dcaStrategies: [
-                {id: "strategy_1", name: "My first dca strategy"},
-                {id: "strategy_2", name: "It's a long term investment"}
+                {uuid: "strategy_1", name: "My first dca strategy", },
+                {uuid: "strategy_2", name: "It's a long term investment"}
             ]
         });
     });
