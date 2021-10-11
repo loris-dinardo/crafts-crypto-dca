@@ -1,4 +1,5 @@
 import {retrieveStrategyListSUT} from "./sut-builder";
+import {DcaStrategyBuilder} from "../dca-strategy-builder";
 
 describe("Retrieve DCA strategy list", () => {
     it('When user has no strategy and has not retrieve them, it should see an empty list', () => {
@@ -8,7 +9,7 @@ describe("Retrieve DCA strategy list", () => {
 
         // assert
         expect(selectAllStrategies()).toEqual({
-            dcaStrategies: []
+            strategies: []
         });
     });
 
@@ -16,8 +17,8 @@ describe("Retrieve DCA strategy list", () => {
         // arrange
         const {selectAllStrategies, retrieveDcaStrategyList} = retrieveStrategyListSUT()
             .withExistingStrategies([
-                {uuid: "strategy_1", name: "My first dca strategy"},
-                {uuid: "strategy_2", name: "It's a long term investment"}
+                DcaStrategyBuilder().withUuid("strategy_1").withName("My first dca strategy").build(),
+                DcaStrategyBuilder().withUuid("strategy_2").withName("It's a long term investment").build()
             ])
             .build();
 
@@ -26,9 +27,9 @@ describe("Retrieve DCA strategy list", () => {
 
         // assert
         expect(selectAllStrategies()).toEqual({
-            dcaStrategies: [
-                {uuid: "strategy_1", name: "My first dca strategy", },
-                {uuid: "strategy_2", name: "It's a long term investment"}
+            strategies: [
+                DcaStrategyBuilder().withUuid("strategy_1").withName("My first dca strategy").build(),
+                DcaStrategyBuilder().withUuid("strategy_2").withName("It's a long term investment").build()
             ]
         });
     });

@@ -1,18 +1,26 @@
-import {createEntityAdapter, createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {DcaStrategy} from "../models/entities/dca-strategy";
-import {retrieveDcaStrategyList} from "./use-cases";
 
-export const dcaStrategiesAdapter = createEntityAdapter<DcaStrategy>();
+export interface DcaStrategiesState {
+    strategies: Array<DcaStrategy>;
+}
 
-export const dcaStrategiesInitialState = dcaStrategiesAdapter.getInitialState();
+export const dcaStrategiesInitialState: DcaStrategiesState = {
+    strategies: [],
+};
 
 export const dcaStrategiesSlice = createSlice({
     name: 'dcaStrategies',
     initialState: dcaStrategiesInitialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder.addCase(retrieveDcaStrategyList.fulfilled, (state, action) => {
-            dcaStrategiesAdapter.setAll(state, action.payload.dcaStrategies);
-        })
-    },
+    reducers: {
+        dcaStrategiesRetrieved(state, action: PayloadAction<Array<DcaStrategy>>) {
+            state.strategies = action.payload;
+        }
+    }
 });
+
+export const {
+    name: dcaStrategiesName,
+    reducer: dcaStrategiesReducer,
+    actions: dcaStrategiesActions
+} = dcaStrategiesSlice;

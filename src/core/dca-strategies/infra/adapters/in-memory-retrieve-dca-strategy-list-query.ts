@@ -1,24 +1,19 @@
-import {
-    RetrieveDcaStrategyListQuery,
-    RetrieveDcaStrategyListQueryResult
-} from "../../models/ports/retrieve-dca-strategy-list-query";
+import {RetrieveDcaStrategyListQuery,} from "../../models/ports/retrieve-dca-strategy-list-query";
+import {DcaStrategy} from "../../models/entities/dca-strategy";
 
 export const createInMemoryRetrieveDcaStrategyListQuery = (
     {
         existingDcaStrategies = [],
         simulatedDelayInMs,
         failureReason,
-    }: { existingDcaStrategies?: RetrieveDcaStrategyListQueryResult['dcaStrategies']; simulatedDelayInMs?: number, failureReason?: string } = {}): RetrieveDcaStrategyListQuery =>
+    }: { existingDcaStrategies?: Array<DcaStrategy>; simulatedDelayInMs?: number, failureReason?: string } = {}): RetrieveDcaStrategyListQuery =>
     () => {
-        const res = {
-            dcaStrategies: existingDcaStrategies,
-        };
         if (failureReason) {
             return !simulatedDelayInMs
                 ? Promise.reject(failureReason)
                 : new Promise((resolve, reject) => setTimeout(() => reject(failureReason), simulatedDelayInMs));
         }
         return !simulatedDelayInMs
-            ? Promise.resolve(res)
-            : new Promise((resolve) => setTimeout(() => resolve(res), simulatedDelayInMs));
+            ? Promise.resolve(existingDcaStrategies)
+            : new Promise((resolve) => setTimeout(() => resolve(existingDcaStrategies), simulatedDelayInMs));
     };

@@ -1,12 +1,3 @@
-import {dcaStrategiesAdapter} from "../slice";
-import {RootState} from "../../../store";
+import {RootState} from "../../../store/root-reducer";
 
-const dcaStrategiesSelectors = dcaStrategiesAdapter.getSelectors<RootState>((state) => state.dcaStrategies);
-
-export const selectDCAStrategies = (state: RootState) => {
-    const dcaStrategies = dcaStrategiesSelectors.selectAll(state);
-
-    return {
-        dcaStrategies
-    }
-}
+export const selectDCAStrategies = (state: RootState) => state.dcaStrategies;

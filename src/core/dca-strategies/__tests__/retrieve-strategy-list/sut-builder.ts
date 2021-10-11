@@ -1,12 +1,10 @@
 import {selectors, useCases} from "../../application";
-import {createTestStore} from "./test-store";
 import {createInMemoryRetrieveDcaStrategyListQuery} from "../../infra/adapters";
+import {createTestStore} from "../test-store";
+import {DcaStrategy} from "../../models/entities/dca-strategy";
 
 interface SUTProps {
-    dcaStrategies?: Array<{
-        uuid: string;
-        name: string;
-    }>
+    dcaStrategies?: Array<DcaStrategy>
 }
 
 export const retrieveStrategyListSUT = (props: SUTProps = {}) => {
@@ -25,7 +23,7 @@ export const retrieveStrategyListSUT = (props: SUTProps = {}) => {
         build() {
             const retrieveDcaStrategyListQuery =
                 createInMemoryRetrieveDcaStrategyListQuery({
-                    //existingDcaStrategies: props.dcaStrategies
+                    existingDcaStrategies: props.dcaStrategies
                 });
             const store = createTestStore({
                 retrieveDcaStrategyListQuery
