@@ -1,19 +1,15 @@
 import {RetrieveDcaStrategyListQuery} from "../../models/ports/retrieve-dca-strategy-list-query";
 import {createInMemoryRetrieveDcaStrategyListQuery} from "../adapters";
 
-export type DcaStrategiesDependencies = {
+export type DcaStrategiesUseCasesDependencies = {
     retrieveDcaStrategyListQuery: RetrieveDcaStrategyListQuery,
 }
 
-const createOptionalParamType = (): {
+export type OptionalUseCasesParamType = {
     retrieveDcaStrategyListQuery?: RetrieveDcaStrategyListQuery,
-} => {
-    return {}
 }
 
-export type OptionalParamType = ReturnType<typeof createOptionalParamType>
-
-export const defaultDcaStrategiesDependencies = (opts?: OptionalParamType): DcaStrategiesDependencies => {
+export const defaultDcaStrategiesUseCasesDependencies = (opts?: OptionalUseCasesParamType): DcaStrategiesUseCasesDependencies => {
     return {
         retrieveDcaStrategyListQuery: opts?.retrieveDcaStrategyListQuery || createInMemoryRetrieveDcaStrategyListQuery(),
     }

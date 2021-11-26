@@ -1,4 +1,4 @@
-import {selectors, useCases} from "../../application";
+import {useCases} from "../../application";
 import {createInMemoryRetrieveDcaStrategyListQuery} from "../../infra/adapters";
 import {createTestStore} from "../test-store";
 import {DcaStrategy} from "../../models/entities/dca-strategy";
@@ -25,10 +25,10 @@ export const retrieveStrategyListSUT = (props: SUTProps = {}) => {
                 createInMemoryRetrieveDcaStrategyListQuery({
                     existingDcaStrategies: props.dcaStrategies
                 });
-            const store = createTestStore({
+            const {store, selectors} = createTestStore({
                 retrieveDcaStrategyListQuery
             });
-            const selectAllStrategies = () => selectors.selectDCAStrategies(store.getState());
+            const selectAllStrategies = () => selectors.dcaStrategies(store.getState()).getAll();
             const retrieveDcaStrategyList = async () => store.dispatch(useCases.retrieveDcaStrategyList());
             return {
                 selectAllStrategies,

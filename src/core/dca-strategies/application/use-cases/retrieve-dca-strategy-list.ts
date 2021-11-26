@@ -1,5 +1,5 @@
 import {AppThunk} from "../../../store";
-import {dcaStrategiesActions} from "../slice";
+import {dcaStrategiesActions} from "../../infra/slices/slice";
 
 export const retrieveDcaStrategyList = (): AppThunk =>
     async (dispatch, _, {dcaStrategies}) => {

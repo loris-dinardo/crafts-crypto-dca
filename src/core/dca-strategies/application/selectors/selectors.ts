@@ -1,3 +1,3 @@
-import {RootState} from "../../../store/root-reducer";
+import {DcaStrategiesState} from "../../infra/slices/slice";
 
-export const selectDCAStrategies = (state: RootState) => state.dcaStrategies;
+export const selectDCAStrategies = (state: DcaStrategiesState) => state;

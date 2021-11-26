@@ -1,1 +1,1 @@
-export * from "./dependencies"
+export * from "./use-cases-dependencies"

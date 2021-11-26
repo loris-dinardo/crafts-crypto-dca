@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {DcaStrategy} from "../models/entities/dca-strategy";
+import {DcaStrategy} from "../../models/entities/dca-strategy";
 
 export interface DcaStrategiesState {
     strategies: Array<DcaStrategy>;

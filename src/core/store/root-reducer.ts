@@ -1,5 +1,5 @@
 import {combineReducers} from "@reduxjs/toolkit";
-import {dcaStrategiesInitialState, dcaStrategiesName, dcaStrategiesReducer} from "../dca-strategies/application/slice";
+import {dcaStrategiesInitialState, dcaStrategiesName, dcaStrategiesReducer} from "../dca-strategies/infra/slices/slice";
 
 export const rootReducer = combineReducers({
     [dcaStrategiesName]: dcaStrategiesReducer,
