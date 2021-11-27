@@ -1,99 +1,117 @@
 import {retrieveStrategiesSUT} from "./sut-builder";
 import {StrategyDtoBuilder} from "../../infrastructure/dtos/strategy-dto.builder";
-import {StrategyBuilder} from "../../models/entities";
 import {RetrieveStrategiesByUserPresenter} from "../../application/use-cases/presenters/retrieve-strategies-by-user-presenter";
+import {StrategySummaryBuilder} from "../builders/strategy-summary.builder";
 
 describe("Retrieve Strategies for a specific user", () => {
-    it('When MyUser retrieves its strategies and has no strategy, it should see an empty list', async () => {
-        // arrange
-        const {selectAllStrategiesByUser, retrieveStrategiesByUser} = retrieveStrategiesSUT()
-            .withoutAnyStrategiesForUser()
-            .build();
-
-        // act
-        await retrieveStrategiesByUser({userId: "MyUser"});
-
-        // assert
-        expect(selectAllStrategiesByUser()).toEqual([]);
-    });
-
-    it('When MyUser retrieves its strategies and has several strategies, it should see a list with only its strategies', async () => {
-        // arrange
-        const {selectAllStrategiesByUser, retrieveStrategiesByUser} =
-            retrieveStrategiesSUT()
-                .withExistingStrategiesForUser([
-                    StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
-                    StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_2", name: "My second strategy"}).build(),
-                    StrategyDtoBuilder({
-                        userId: "RandomUser",
-                        uuid: "Uuid_Strategy_3",
-                        name: "My random strategy"
-                    }).build()
-                ])
+    describe("When MyUser retrieves its strategies and has no strategy", () => {
+        it("it should see an empty list", async () => {
+            // arrange
+            const {selectStrategySummaryListByUser, retrieveStrategiesByUser} = retrieveStrategiesSUT()
+                .withoutAnyStrategiesForUser()
                 .build();
 
-        // act
-        await retrieveStrategiesByUser({userId: "MyUser"});
+            // act
+            await retrieveStrategiesByUser({userId: "MyUser"});
 
-        // assert
-        expect(selectAllStrategiesByUser()).toEqual(
-            [
-                StrategyBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
-                StrategyBuilder({userId: "MyUser", uuid: "Uuid_Strategy_2", name: "My second strategy"}).build(),
-            ]
-        );
+            // assert
+            expect(selectStrategySummaryListByUser()).toEqual([]);
+        });
     });
-
-    it("When MyUser retrieves its strategies, it wants to be notified when the retrieving is processing and " +
-        "when it's finished", async () => {
-        // arrange
-        const presenter: RetrieveStrategiesByUserPresenter = {
-            retrievingStrategies: () => {
-            },
-            strategiesRetrieved: () => {
+    describe("When MyUser retrieves its strategies,  it wants to be notified ", () => {
+        it("When the retrieving is processing and when it's finished", async () => {
+            // arrange
+            const presenter: RetrieveStrategiesByUserPresenter = {
+                retrievingStrategies: () => {
+                },
+                strategiesRetrieved: () => {
+                }
             }
-        }
-        const retrievingStrategiesCalled = jest.spyOn(presenter, 'retrievingStrategies');
-        const strategiesRetrievedCalled = jest.spyOn(presenter, 'strategiesRetrieved');
+            const retrievingStrategiesCalled = jest.spyOn(presenter, 'retrievingStrategies');
+            const strategiesRetrievedCalled = jest.spyOn(presenter, 'strategiesRetrieved');
 
-        const {retrieveStrategiesByUser} =
-            retrieveStrategiesSUT()
-                .withExistingStrategiesForUser([
-                    StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
-                ])
-                .withRetrieveStrategiesPresenter(presenter)
-                .build();
+            const {retrieveStrategiesByUser} =
+                retrieveStrategiesSUT()
+                    .withExistingStrategiesForUser([
+                        StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
+                    ])
+                    .withRetrieveStrategiesPresenter(presenter)
+                    .build();
 
-        // act
-        await retrieveStrategiesByUser({userId: "MyUser"});
+            // act
+            await retrieveStrategiesByUser({userId: "MyUser"});
 
-        // assert
-        expect(retrievingStrategiesCalled).toHaveBeenCalled();
-        expect(strategiesRetrievedCalled).toHaveBeenCalled();
+            // assert
+            expect(retrievingStrategiesCalled).toHaveBeenCalled();
+            expect(strategiesRetrievedCalled).toHaveBeenCalled();
+        });
+
+        it("When the retrieving failed ", async () => {
+            // arrange
+            const presenter: RetrieveStrategiesByUserPresenter = {
+                retrievingStrategiesFailed: (error) => error
+            }
+            const retrievingStrategiesFailedCalled = jest.spyOn(presenter, 'retrievingStrategiesFailed');
+
+            const {selectStrategySummaryListByUser, retrieveStrategiesByUser} =
+                retrieveStrategiesSUT()
+                    .withExistingStrategiesForUser([
+                        StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
+                    ])
+                    .withRetrieveStrategiesPresenter(presenter)
+                    .withRetrieveStrategiesFailureReason("Retrieving strategies error")
+                    .build();
+
+            // act
+            await retrieveStrategiesByUser({userId: "MyUser"});
+
+            // assert
+            expect(retrievingStrategiesFailedCalled).toHaveBeenLastCalledWith(new Error("Retrieving strategies error"));
+            expect(selectStrategySummaryListByUser()).toEqual(undefined);
+        });
     });
+    describe("When MyUser retrieves its strategies and has one strategy", () => {
+       it("When the strategy is a DCA to buy every day at noon UTC, 15 USD of Asset_X on Exchange_1, " +
+           "the description should reflect this information", async () => {
+           const {selectStrategySummaryListByUser, retrieveStrategiesByUser} =
+               retrieveStrategiesSUT()
+                   .withExistingStrategiesForUser([
+                       StrategyDtoBuilder({
+                           userId: "MyUser",
+                           uuid: "Uuid_Strategy_1",
+                           name: "My first strategy",
+                           created: "CreationDate",
+                           modified: "ModificationDate",
+                           type: "DCA",
+                           buyOrSell: "Buy",
+                           exchange: "Exchange_1",
+                           asset: "Asset_X",
+                           currency: "USD",
+                           currencyAmount: 15,
+                           trigger: {type: "Daily", hour: "12", minute: "00", timeZone: "UTC"},
+                           active: true
+                       }).build(),
+                   ])
+                   .build();
 
-    it("When MyUser retrieves its strategies, it wants to be notified when the retrieving failed ", async () => {
-        // arrange
-        const presenter: RetrieveStrategiesByUserPresenter = {
-            retrievingStrategiesFailed: (error) => error
-        }
-        const retrievingStrategiesFailedCalled = jest.spyOn(presenter, 'retrievingStrategiesFailed');
+           // act
+           await retrieveStrategiesByUser({userId: "MyUser"});
 
-        const {selectAllStrategiesByUser, retrieveStrategiesByUser} =
-            retrieveStrategiesSUT()
-                .withExistingStrategiesForUser([
-                    StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
-                ])
-                .withRetrieveStrategiesPresenter(presenter)
-                .withRetrieveStrategiesFailureReason("Retrieving strategies error")
-                .build();
+           // assert
+           expect(selectStrategySummaryListByUser()).toEqual(
+               [
+                   StrategySummaryBuilder({
+                       uuid: "Uuid_Strategy_1",
+                       name: "My first strategy",
+                       description: "DCA (Buy) - 15USD - Triggered Daily at 12:00 UTC",
+                       asset: "Asset_X",
+                       exchange: "Exchange_1",
+                       lastUpdate: "ModificationDate"
+                   }).build(),
+               ]
+           );
+       });
 
-        // act
-        await retrieveStrategiesByUser({userId: "MyUser"});
-
-        // assert
-        expect(retrievingStrategiesFailedCalled).toHaveBeenLastCalledWith(new Error("Retrieving strategies error"));
-        expect(selectAllStrategiesByUser()).toEqual(undefined);
     });
 });
 

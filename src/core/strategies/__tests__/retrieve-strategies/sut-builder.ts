@@ -43,11 +43,11 @@ export const retrieveStrategiesSUT = (props: SUTProps = {}) => {
                     failureReason: props.failureReason
                 });
             const {store, selectors} = createTestStore({retrieveStrategiesByUserQuery});
-            const selectAllStrategiesByUser = () => selectors.strategies(store.getState()).getAllByUser();
+            const selectStrategySummaryListByUser = () => selectors.strategies(store.getState()).getAllByUser();
             const retrieveStrategiesByUser = async (command: RetrieveStrategiesCommand) =>
                 store.dispatch(useCases.retrieveStrategies(command, props.presenter));
             return {
-                selectAllStrategiesByUser,
+                selectStrategySummaryListByUser,
                 retrieveStrategiesByUser
             }
         }

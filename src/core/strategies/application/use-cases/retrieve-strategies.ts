@@ -9,7 +9,8 @@ export const retrieveStrategies = (command: RetrieveStrategiesCommand, presenter
             presenter && presenter.retrievingStrategies && presenter.retrievingStrategies();
             const {retrieveStrategiesByUserQuery} = strategies;
             const strategiesByUser = await retrieveStrategiesByUserQuery(command.userId);
-            dispatch(strategiesActions.strategiesRetrieved(strategiesByUser));
+            const strategySummaryListByUser = strategiesByUser.map(strategiesByUser => strategiesByUser.toStrategySummary());
+            dispatch(strategiesActions.strategiesRetrieved(strategySummaryListByUser));
         } catch (e) {
             presenter && presenter.retrievingStrategiesFailed && presenter.retrievingStrategiesFailed(e);
         } finally {

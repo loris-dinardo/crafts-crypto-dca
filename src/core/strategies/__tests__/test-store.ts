@@ -3,12 +3,12 @@ import {defaultRootUseCasesDependencies} from "../../store/root-use-cases-depend
 import {defaultRootState} from "../../store/root-reducer";
 import {OptionalUseCasesParamType} from "../infrastructure/configuration/use-cases-dependencies";
 import {defaultRootSelectorsDependencies} from "../../store/root-selectors-dependencies";
-import {Strategy} from "../models/entities";
 import {strategiesName} from "../infrastructure/slices/strategies-slice";
 import {createInMemoryRetrieveStrategiesByUserQuery} from "../infrastructure/adapters/in-memory-retrieve-strategies-by-user-query";
+import {StrategySummary} from "../models/value-objects/strategy-summary";
 
 type TestStoreState = OptionalUseCasesParamType & {
-    strategies?: Array<Strategy>;
+    strategies?: Array<StrategySummary>;
 };
 
 export const createTestStore = ({retrieveStrategiesByUserQuery, strategies}: TestStoreState) => {

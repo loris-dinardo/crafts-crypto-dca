@@ -1,18 +1,17 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Strategy} from "../../models/entities";
+import {StrategySummary} from "../../models/value-objects/strategy-summary";
 
 export interface StrategiesState {
-    strategies?: Array<Strategy>;
+    strategies?: Array<StrategySummary>;
 }
 
-export const strategiesInitialState: StrategiesState = {
-};
+export const strategiesInitialState: StrategiesState = {};
 
 export const strategiesSlice = createSlice({
     name: 'strategies',
     initialState: strategiesInitialState,
     reducers: {
-        strategiesRetrieved(state, action: PayloadAction<Array<Strategy>>) {
+        strategiesRetrieved(state, action: PayloadAction<Array<StrategySummary>>) {
             state.strategies = action.payload;
         }
     }
