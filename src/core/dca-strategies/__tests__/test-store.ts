@@ -4,6 +4,7 @@ import {defaultRootState} from "../../store/root-reducer";
 import {DcaStrategy} from "../models/entities/dca-strategy";
 import {OptionalUseCasesParamType} from "../infra/config";
 import {createInMemoryRetrieveDcaStrategyListQuery} from "../infra/adapters";
+import {defaultRootSelectorsDependencies} from "../../store/root-selectors-dependencies";
 
 type TestStoreState = OptionalUseCasesParamType & {
     strategies?: Array<DcaStrategy>;
@@ -16,6 +17,7 @@ export const createTestStore = ({retrieveDcaStrategyListQuery, strategies}: Test
                 retrieveDcaStrategyListQuery: retrieveDcaStrategyListQuery ?? createInMemoryRetrieveDcaStrategyListQuery(),
             }
         }),
+        defaultRootSelectorsDependencies({}),
         {
             ...defaultRootState(),
             dcaStrategies: {

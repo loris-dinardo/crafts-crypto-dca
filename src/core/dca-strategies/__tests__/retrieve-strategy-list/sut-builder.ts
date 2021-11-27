@@ -9,7 +9,7 @@ interface SUTProps {
 
 export const retrieveStrategyListSUT = (props: SUTProps = {}) => {
     return {
-        withoutStrategies() {
+        withoutAnyStrategiesForUser() {
             return retrieveStrategyListSUT({
                 ...props
             });

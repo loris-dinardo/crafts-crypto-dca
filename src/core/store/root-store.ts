@@ -2,8 +2,10 @@ import {Action, AnyAction, configureStore, Dispatch, Middleware, ThunkAction} fr
 import {RootUseCasesDependencies} from "./root-use-cases-dependencies";
 import {rootReducer, RootState} from "./root-reducer";
 import {RootSelectorsDependencies} from "./root-selectors-dependencies";
-import {combineDcaStrategiesSelectors} from "../dca-strategies/application/selectors";
 import {dcaStrategiesName} from "../dca-strategies/infra/slices/slice";
+import {strategiesName} from "../strategies/infrastructure/slices/strategies-slice";
+import {combineDcaStrategiesSelectors} from "../dca-strategies/application/selectors";
+import {combineStrategiesSelectors} from "../strategies/application/selectors";
 
 export const configureReduxStore = (
     useCasesDependencies: RootUseCasesDependencies,
@@ -25,6 +27,7 @@ export const configureReduxStore = (
     return {
         store,
         selectors: {
+            strategies: (state: RootState) => combineStrategiesSelectors(state[strategiesName]),
             dcaStrategies: (state: RootState) => combineDcaStrategiesSelectors(state[dcaStrategiesName])
         }
     };

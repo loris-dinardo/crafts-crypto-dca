@@ -5,7 +5,7 @@ describe("Retrieve DCA strategy list", () => {
     it('When user has no strategy and has not retrieve them, it should see an empty list', () => {
         // arrange
         const {selectAllStrategies} = retrieveStrategyListSUT()
-            .withoutStrategies().build();
+            .withoutAnyStrategiesForUser().build();
 
         // assert
         expect(selectAllStrategies()).toEqual({
