@@ -1,22 +1,21 @@
-import React, {useState} from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React from 'react'
+import {Header} from "./ui/components/Header";
+import {NotFound} from "./pages/not-found/NotFound";
+import {Strategies} from "./pages/strategies/Strategies";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 
 export const App: React.FC = () => {
-    const [count, setCount] = useState(0)
-
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo"/>
-                <p>Hello Vite + React!</p>
-                <p>
-                    <button type="button" onClick={() => setCount((count) => count + 1)}>
-                        count is: {count}
-                    </button>
-                </p>
-            </header>
-        </div>
+        <>
+            <Header/>
+            <BrowserRouter>
+                <Routes>
+                    <Route path={"/"} element={<Navigate to="/strategies"/>}/>
+                    <Route path={"/strategies"} element={<Strategies/>}/>
+                    <Route path='*' element={<NotFound/>}/>
+                </Routes>
+            </BrowserRouter>
+        </>
     )
 };
 
