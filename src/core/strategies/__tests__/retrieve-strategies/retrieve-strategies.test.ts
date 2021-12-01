@@ -1,7 +1,12 @@
 import {retrieveStrategiesSUT} from "./sut-builder";
 import {StrategyDtoBuilder} from "../../infrastructure/dtos/strategy-dto.builder";
-import {RetrieveStrategiesByUserPresenter} from "../../application/use-cases/presenters/retrieve-strategies-by-user-presenter";
+import {
+    RetrieveStrategiesByUserPresenter
+} from "../../application/use-cases/presenters/retrieve-strategies-by-user-presenter";
 import {StrategySummaryBuilder} from "../builders/strategy-summary.builder";
+import {StrategySummary} from "../../models/value-objects/strategy-summary";
+import {RetrieveStrategiesCommand} from "../../application/use-cases/commands/retrieve-strategies-command";
+import {BuyOrSellDto, TriggerDto} from "../../infrastructure/dtos";
 
 describe("Retrieve Strategies for a specific user", () => {
     describe("When MyUser retrieves its strategies and has no strategy", () => {
@@ -33,7 +38,11 @@ describe("Retrieve Strategies for a specific user", () => {
             const {retrieveStrategiesByUser} =
                 retrieveStrategiesSUT()
                     .withExistingStrategiesForUser([
-                        StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
+                        StrategyDtoBuilder({
+                            userId: "MyUser",
+                            uuid: "Uuid_Strategy_1",
+                            name: "My first strategy"
+                        }).build(),
                     ])
                     .withRetrieveStrategiesPresenter(presenter)
                     .build();
@@ -56,7 +65,11 @@ describe("Retrieve Strategies for a specific user", () => {
             const {selectStrategySummaryListByUser, retrieveStrategiesByUser} =
                 retrieveStrategiesSUT()
                     .withExistingStrategiesForUser([
-                        StrategyDtoBuilder({userId: "MyUser", uuid: "Uuid_Strategy_1", name: "My first strategy"}).build(),
+                        StrategyDtoBuilder({
+                            userId: "MyUser",
+                            uuid: "Uuid_Strategy_1",
+                            name: "My first strategy"
+                        }).build(),
                     ])
                     .withRetrieveStrategiesPresenter(presenter)
                     .withRetrieveStrategiesFailureReason("Retrieving strategies error")
@@ -71,47 +84,108 @@ describe("Retrieve Strategies for a specific user", () => {
         });
     });
     describe("When MyUser retrieves its strategies and has one strategy", () => {
-       it("When the strategy is a DCA to buy every day at noon UTC, 15 USD of Asset_X on Exchange_1, " +
-           "the description should reflect this information", async () => {
-           const {selectStrategySummaryListByUser, retrieveStrategiesByUser} =
-               retrieveStrategiesSUT()
-                   .withExistingStrategiesForUser([
-                       StrategyDtoBuilder({
-                           userId: "MyUser",
-                           uuid: "Uuid_Strategy_1",
-                           name: "My first strategy",
-                           created: "CreationDate",
-                           modified: "ModificationDate",
-                           type: "DCA",
-                           buyOrSell: "Buy",
-                           exchange: "Exchange_1",
-                           asset: "Asset_X",
-                           currency: "USD",
-                           currencyAmount: 15,
-                           trigger: {type: "Daily", hour: "12", minute: "00", timeZone: "UTC"},
-                           active: true
-                       }).build(),
-                   ])
-                   .build();
+        const arrangeRetrieveStrategiesSUT = (
+            buyOrSell: BuyOrSellDto = "Undefined",
+            exchange: string,
+            asset: string,
+            trigger: TriggerDto = {type: "Undefined"}
+        ): {
+            selectStrategySummaryListByUser: () => Array<StrategySummary> | undefined,
+            retrieveStrategiesByUser: (command: RetrieveStrategiesCommand) => Promise<void>
+        } => {
+            const {selectStrategySummaryListByUser, retrieveStrategiesByUser} =
+                retrieveStrategiesSUT()
+                    .withExistingStrategiesForUser([
+                        StrategyDtoBuilder({
+                            userId: "MyUser",
+                            uuid: "Uuid_Strategy_1",
+                            name: "My first strategy",
+                            created: "CreationDate",
+                            type: "DCA",
+                            buyOrSell,
+                            exchange,
+                            asset,
+                            currency: "USD",
+                            currencyAmount: 15,
+                            trigger,
+                            active: true
+                        }).build(),
+                    ])
+                    .build();
+            return {
+                selectStrategySummaryListByUser,
+                retrieveStrategiesByUser
+            }
+        }
 
-           // act
-           await retrieveStrategiesByUser({userId: "MyUser"});
+        const assertEquals = (selectStrategySummaryListByUser: () => Array<StrategySummary> | undefined) => (
+            description: string,
+            exchange: string,
+            asset: string,
+        ) => {
+            expect(selectStrategySummaryListByUser()).toEqual(
+                [
+                    StrategySummaryBuilder({
+                        uuid: "Uuid_Strategy_1",
+                        name: "My first strategy",
+                        description,
+                        asset,
+                        exchange,
+                        lastUpdate: "CreationDate",
+                        activated: true
+                    }).build(),
+                ]
+            );
+        }
 
-           // assert
-           expect(selectStrategySummaryListByUser()).toEqual(
-               [
-                   StrategySummaryBuilder({
-                       uuid: "Uuid_Strategy_1",
-                       name: "My first strategy",
-                       description: "DCA (Buy) - 15USD - Triggered Daily at 12:00 UTC",
-                       asset: "Asset_X",
-                       exchange: "Exchange_1",
-                       lastUpdate: "ModificationDate"
-                   }).build(),
-               ]
-           );
-       });
+        it("When the strategy is a DCA to buy every day at noon UTC, 15 USD of Asset_X on Exchange_1, " +
+            "the description should reflect this information", async () => {
+            const {selectStrategySummaryListByUser, retrieveStrategiesByUser} =
+                arrangeRetrieveStrategiesSUT(
+                    "Buy", "Exchange_1", "Asset_X",
+                    {
+                        type: "Daily",
+                        time: {
+                            hour: "12",
+                            minute: "00",
+                            timeZone: "UTC"
+                        }
+                    });
 
+            // act
+            await retrieveStrategiesByUser({userId: "MyUser"});
+
+            // assert
+            assertEquals(selectStrategySummaryListByUser)(
+                "DCA (Buy) - 15USD of Asset_X on Exchange_1 - Triggered Daily at 12:00 UTC",
+                "Exchange_1", "Asset_X",
+            );
+        });
+
+        it("When the strategy is a DCA to sell every week on Tuesday at 1pm UTC+2, 15 USD of Asset_Y on Exchange_2, " +
+            "the description should reflect this information", async () => {
+            const {selectStrategySummaryListByUser, retrieveStrategiesByUser} =
+                arrangeRetrieveStrategiesSUT(
+                    "Sell", "Exchange_2", "Asset_Y",
+                    {
+                        type: "Weekly",
+                        day: 2,
+                        time: {
+                            hour: "13",
+                            minute: "00",
+                            timeZone: "UTC+2"
+                        }
+                    });
+
+            // act
+            await retrieveStrategiesByUser({userId: "MyUser"});
+
+            // assert
+            assertEquals(selectStrategySummaryListByUser)(
+                "DCA (Sell) - 15USD of Asset_Y on Exchange_2 - Triggered Weekly on Tuesday at 13:00 UTC+2",
+                "Exchange_2", "Asset_Y",
+            );
+        });
     });
 });
 

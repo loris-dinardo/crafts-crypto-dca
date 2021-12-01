@@ -18,7 +18,7 @@ export interface StrategyDto {
 
 export type StrategyTypeDto = "DCA" | "Undefined";
 export type BuyOrSellDto = "Buy" | "Sell" | "Undefined";
-type TriggerType = "Daily" | "Undefined";
+type TriggerType = "Daily" | "Weekly" | "Undefined";
 
 interface Trigger<T = TriggerType> {
     type: T
@@ -27,13 +27,22 @@ interface Trigger<T = TriggerType> {
 interface UndefinedTrigger extends Trigger<"Undefined"> {
 }
 
-interface DailyTrigger extends Trigger<"Daily"> {
+interface TriggerTime {
     hour: string;
     minute: string;
     timeZone: string;
 }
 
-export type TriggerDto = DailyTrigger | UndefinedTrigger;
+interface DailyTrigger extends Trigger<"Daily"> {
+    time: TriggerTime
+}
+
+interface WeeklyTrigger extends Trigger<"Weekly"> {
+    day: 2,
+    time: TriggerTime
+}
+
+export type TriggerDto = DailyTrigger | WeeklyTrigger | UndefinedTrigger;
 
 export const toStrategy = ({
                                uuid,

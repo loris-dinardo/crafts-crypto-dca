@@ -7,6 +7,7 @@ interface StrategySummaryBuilderProps {
     asset?: string;
     exchange?: string;
     lastUpdate?: string;
+    activated?: boolean;
 }
 
 export const StrategySummaryBuilder = (props: StrategySummaryBuilderProps = {}) => {
@@ -19,6 +20,7 @@ export const StrategySummaryBuilder = (props: StrategySummaryBuilderProps = {}) 
                 asset: modifiedProps.asset ?? props.asset ?? "",
                 exchange: modifiedProps.exchange ?? props.exchange ?? "",
                 lastUpdate: modifiedProps.lastUpdate ?? props.lastUpdate ?? "",
+                activated: modifiedProps.activated ?? props.activated ?? false,
             }
         }
     }

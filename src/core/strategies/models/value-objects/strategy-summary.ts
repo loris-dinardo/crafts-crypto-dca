@@ -5,4 +5,5 @@ export interface StrategySummary {
     asset: string;
     exchange: string;
     lastUpdate: string;
+    activated: boolean;
 }
